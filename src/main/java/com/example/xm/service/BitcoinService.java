@@ -1,6 +1,5 @@
 package com.example.xm.service;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -9,12 +8,10 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import com.example.xm.model.Bitcoin;
@@ -45,6 +42,21 @@ public class BitcoinService {
     this.schema = CsvSchema.emptySchema().withHeader();
   }
 
+  public List<Bitcoin> fetchBitCoins(String bitcoinName) {
+    ObjectReader oReader = csvMapper.reader(Bitcoin.class).with(schema);
+    List<Bitcoin> bitcoins = new ArrayList<>();
+    try (Reader reader = new FileReader(FILE_SOURCE.concat(bitcoinName).concat(FILE_SUFFIX))) {
+      MappingIterator<Bitcoin> bitcoinMappingIterator = oReader.readValues(reader);
+      while (bitcoinMappingIterator.hasNext()) {
+        Bitcoin current = bitcoinMappingIterator.next();
+        bitcoins.add(current);
+      }
+      return bitcoins;
+    } catch (IOException e) {
+      throw new RuntimeException("Could not retrieve data", e);
+    }
+  }
+
   public List<Bitcoin> fetchBitCoins(String bitcoinName, LocalDate from, LocalDate to) {
     ObjectReader oReader = csvMapper.reader(Bitcoin.class).with(schema);
     Timestamp fromTimestamp = Timestamp.valueOf(from.atStartOfDay());
@@ -72,19 +84,19 @@ public class BitcoinService {
     Timestamp newest = NEWEST;
     BitcoinMonthResults result = new BitcoinMonthResults();
     for (Bitcoin bitcoin : bitcoins) {
-      if(bitcoin.getPrice().compareTo(max) >= 0) {
+      if (bitcoin.getPrice().compareTo(max) >= 0) {
         max = bitcoin.getPrice();
         result.setMax(bitcoin);
       }
-      if(bitcoin.getPrice().compareTo(min) <= 0) {
+      if (bitcoin.getPrice().compareTo(min) <= 0) {
         min = bitcoin.getPrice();
         result.setMin(bitcoin);
       }
-      if(bitcoin.getTimestamp().before(oldest)) {
+      if (bitcoin.getTimestamp().before(oldest)) {
         oldest = bitcoin.getTimestamp();
         result.setOldest(bitcoin);
       }
-      if(bitcoin.getTimestamp().after(newest)) {
+      if (bitcoin.getTimestamp().after(newest)) {
         newest = bitcoin.getTimestamp();
         result.setNewest(bitcoin);
       }
@@ -92,9 +104,16 @@ public class BitcoinService {
     return result;
   }
 
+  public BitcoinMonthResults calculateBitCoinsResultsSpecificDate(LocalDate date, String bitcoinName) {
+    List<Bitcoin> bitcoins = fetchBitCoins(bitcoinName);
+    return calculateBitCoinsResults(bitcoins.stream()
+        .filter(bitcoin -> bitcoin.getTimestamp().toLocalDateTime().toLocalDate().equals(date) && bitcoin.getSymbol().equals(bitcoinName))
+        .collect(Collectors.toList()));
+  }
+
   public List<NormalizeBitcoin> calculateNormalizeRange(List<String> bitcoinNames, LocalDate from, LocalDate to) {
     return bitcoinNames.stream()
-        .map(bitcoinName -> fetchBitCoins(bitcoinName,from, to))
+        .map(bitcoinName -> fetchBitCoins(bitcoinName, from, to))
         .map(this::calculateBitCoinsResults)
         .map(BitcoinService::calculateNormalization)
         .sorted((a, b) -> b.getRange().compareTo(a.getRange()))

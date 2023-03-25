@@ -37,4 +37,10 @@ class BitcoinServiceTest {
     Assertions.assertNotNull(result);
 
   }
+  @Test
+  void calculateBitCoinsResultsSpecificDate() {
+    BitcoinMonthResults result = bitcoinService.calculateBitCoinsResultsSpecificDate(LocalDate.of(2022,01,01), "BTC");
+    Assertions.assertNotNull(result);
+
+  }
 }
