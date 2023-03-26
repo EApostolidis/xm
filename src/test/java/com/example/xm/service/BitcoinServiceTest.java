@@ -20,26 +20,28 @@ class BitcoinServiceTest {
 
   @Test
   void fetchBitCoins() {
-    List<Bitcoin> result = bitcoinService.fetchBitCoins("ETH", LocalDate.of(2000, 01, 01), LocalDate.of(2030,01,01));
+    List<Bitcoin> result = bitcoinService.fetchBitCoins("ETH", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
     Assertions.assertNotNull(result);
   }
 
   @Test
   void calculateBitCoinsResults() {
-    List<Bitcoin> bitcoins = bitcoinService.fetchBitCoins("DOGE", LocalDate.of(2000, 01, 01), LocalDate.of(2030,01,01));
+    List<Bitcoin> bitcoins = bitcoinService.fetchBitCoins("DOGE", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
     BitcoinMonthResults result = bitcoinService.calculateBitCoinsResults(bitcoins);
     Assertions.assertNotNull(result);
   }
 
   @Test
   void calculateNormalizeRange() {
-    List<NormalizeBitcoin> result = bitcoinService.calculateNormalizeRange(List.of("BTC", "DOGE", "ETH", "LTC", "XRP"), LocalDate.of(2000, 01, 01), LocalDate.of(2030,01,01));
+    List<NormalizeBitcoin> result = bitcoinService.calculateNormalizeRange(List.of("BTC", "DOGE", "ETH", "LTC", "XRP"), LocalDate.of(2000, 01, 01),
+        LocalDate.of(2030, 01, 01));
     Assertions.assertNotNull(result);
 
   }
+
   @Test
   void calculateBitCoinsResultsSpecificDate() {
-    BitcoinMonthResults result = bitcoinService.calculateBitCoinsResultsSpecificDate(LocalDate.of(2022,01,01), "BTC");
+    BitcoinMonthResults result = bitcoinService.calculateBitCoinsResultsSpecificDate(LocalDate.of(2022, 01, 01), "BTC");
     Assertions.assertNotNull(result);
 
   }
