@@ -1,0 +1,10 @@
+server:
+  port: 8080
+xm:
+  name: "AAAA"
+  bitcoinNames:
+    - BTC
+    - DOGE
+    - ETH
+    - LTC
+    - XRP

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class NormalizeBitcoin {
+public class NormalizeRange {
 
   private String symbol;
   private BigDecimal range;

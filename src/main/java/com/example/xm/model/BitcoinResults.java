@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BitcoinMonthResults {
+public class BitcoinResults {
 
   private Bitcoin oldest;
   private Bitcoin newest;

@@ -1,0 +1,8 @@
+xm:
+  name: "AAAA"
+  bitcoinNames:
+    - BTC
+    - DOGE
+    - ETH
+    - LTC
+    - XRP
