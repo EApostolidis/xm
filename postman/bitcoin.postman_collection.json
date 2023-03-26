@@ -1,0 +1,89 @@
+{
+	"info": {
+		"_postman_id": "5fcb0800-5e81-4ae2-8828-55e6952d2849",
+		"name": "bitcoin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3956460"
+	},
+	"item": [
+		{
+			"name": "getNormalizedRange",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/bitcoins/normalized-range?from=2000-01-01&to=3000-01-01",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bitcoins",
+						"normalized-range"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "2000-01-01"
+						},
+						{
+							"key": "to",
+							"value": "3000-01-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBitcoinResults",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/bitcoins/results?bitcoinName=BTC",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bitcoins",
+						"results"
+					],
+					"query": [
+						{
+							"key": "bitcoinName",
+							"value": "BTC"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getHighestNormalizedRangeByDate",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/bitcoins/highest-normalized-range?date=2022-01-03",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"bitcoins",
+						"highest-normalized-range"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "2022-01-03"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
