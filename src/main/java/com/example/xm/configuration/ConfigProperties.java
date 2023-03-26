@@ -14,7 +14,4 @@ import lombok.Data;
 public class ConfigProperties {
 
   public List<String> bitcoinNames = new ArrayList<>();
-
-  public String name;
-
 }
