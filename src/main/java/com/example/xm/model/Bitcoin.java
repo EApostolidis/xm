@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Bitcoin {
-  
+
   private Timestamp timestamp;
   private String symbol;
   private BigDecimal price;
