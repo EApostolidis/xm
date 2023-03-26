@@ -10,10 +10,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
+import com.example.xm.configuration.ConfigProperties;
 import com.example.xm.model.Bitcoin;
 import com.example.xm.model.BitcoinMonthResults;
 import com.example.xm.model.NormalizeBitcoin;
@@ -22,27 +22,27 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
-import lombok.AllArgsConstructor;
-
 @Service
-@AllArgsConstructor
 public class BitcoinService {
 
   private static final BigDecimal MIN = BigDecimal.valueOf(99999999999999999.99);
   private static final BigDecimal MAX = BigDecimal.valueOf(0);
   private static final Timestamp OLDEST = Timestamp.valueOf("3000-01-01 00:00:00");
   private static final Timestamp NEWEST = Timestamp.valueOf("1900-01-01 00:00:00");
-  private static String FILE_SOURCE = "src/test/resources/prices/";
+  private static String FILE_SOURCE = "src/main/resources/prices/";
   private static String FILE_SUFFIX = "_values.csv";
+  private final ConfigProperties configProperties;
   private final CsvMapper csvMapper;
   private final CsvSchema schema;
 
-  public BitcoinService() {
+  public BitcoinService(ConfigProperties configProperties) {
+    this.configProperties = configProperties;
     this.csvMapper = new CsvMapper();
     this.schema = CsvSchema.emptySchema().withHeader();
   }
 
   public List<Bitcoin> fetchBitCoins(String bitcoinName) {
+    checkIfBitcoinExists(bitcoinName);
     ObjectReader oReader = csvMapper.reader(Bitcoin.class).with(schema);
     List<Bitcoin> bitcoins = new ArrayList<>();
     try (Reader reader = new FileReader(FILE_SOURCE.concat(bitcoinName).concat(FILE_SUFFIX))) {
@@ -99,8 +99,8 @@ public class BitcoinService {
         .collect(Collectors.toList()));
   }
 
-  public List<NormalizeBitcoin> calculateNormalizeRange(List<String> bitcoinNames, LocalDate from, LocalDate to) {
-    return bitcoinNames.stream()
+  public List<NormalizeBitcoin> calculateNormalizeRange(LocalDate from, LocalDate to) {
+    return configProperties.getBitcoinNames().stream()
         .map(bitcoinName -> fetchBitCoinsPeriod(bitcoinName, from, to))
         .map(this::calculateBitCoinsResults)
         .map(BitcoinService::calculateNormalization)
@@ -109,7 +109,7 @@ public class BitcoinService {
   }
 
   public NormalizeBitcoin fetchHighestNormalizedCrypto(LocalDate date) {
-    return Stream.of("BTC", "DOGE", "ETH", "LTC", "XRP")
+    return configProperties.getBitcoinNames().stream()
         .map(bitcoinName -> fetchBitCoinsPeriod(bitcoinName, date.atStartOfDay().toLocalDate(), date.plusDays(1).atStartOfDay().toLocalDate()))
         .map(this::calculateBitCoinsResults)
         .map(BitcoinService::calculateNormalization)
@@ -124,5 +124,11 @@ public class BitcoinService {
     normalizeBitcoin.setRange((bitcoinMonthResults.getMax().getPrice().subtract(bitcoinMonthResults.getMin().getPrice()))
         .divide(bitcoinMonthResults.getMin().getPrice(), 2, RoundingMode.HALF_UP));
     return normalizeBitcoin;
+  }
+
+  private void checkIfBitcoinExists(String bitcoinName) {
+    if (!configProperties.getBitcoinNames().contains(bitcoinName)) {
+      throw new RuntimeException("There is no data for this bitcoin: " + bitcoinName);
+    }
   }
 }

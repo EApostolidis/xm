@@ -33,7 +33,7 @@ class BitcoinServiceTest {
 
   @Test
   void calculateNormalizeRange() {
-    List<NormalizeBitcoin> result = bitcoinService.calculateNormalizeRange(List.of("BTC", "DOGE", "ETH", "LTC", "XRP"), LocalDate.of(2000, 01, 01),
+    List<NormalizeBitcoin> result = bitcoinService.calculateNormalizeRange(LocalDate.of(2000, 01, 01),
         LocalDate.of(2030, 01, 01));
     Assertions.assertNotNull(result);
 
