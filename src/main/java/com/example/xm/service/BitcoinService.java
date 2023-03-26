@@ -57,23 +57,12 @@ public class BitcoinService {
     }
   }
 
-  public List<Bitcoin> fetchBitCoins(String bitcoinName, LocalDate from, LocalDate to) {
-    ObjectReader oReader = csvMapper.reader(Bitcoin.class).with(schema);
+  public List<Bitcoin> fetchBitCoinsPeriod(String bitcoinName, LocalDate from, LocalDate to) {
     Timestamp fromTimestamp = Timestamp.valueOf(from.atStartOfDay());
     Timestamp toTimestamp = Timestamp.valueOf(to.atStartOfDay());
-    List<Bitcoin> bitcoins = new ArrayList<>();
-    try (Reader reader = new FileReader(FILE_SOURCE.concat(bitcoinName).concat(FILE_SUFFIX))) {
-      MappingIterator<Bitcoin> bitcoinMappingIterator = oReader.readValues(reader);
-      while (bitcoinMappingIterator.hasNext()) {
-        Bitcoin current = bitcoinMappingIterator.next();
-        if (current.getTimestamp().after(fromTimestamp) && current.getTimestamp().before(toTimestamp)) {
-          bitcoins.add(current);
-        }
-      }
-      return bitcoins;
-    } catch (IOException e) {
-      throw new RuntimeException("Could not retrieve data", e);
-    }
+    return fetchBitCoins(bitcoinName).stream()
+        .filter(bitcoin -> bitcoin.getTimestamp().after(fromTimestamp) && bitcoin.getTimestamp().before(toTimestamp))
+        .collect(Collectors.toList());
   }
 
   public BitcoinMonthResults calculateBitCoinsResults(List<Bitcoin> bitcoins) {
@@ -112,7 +101,7 @@ public class BitcoinService {
 
   public List<NormalizeBitcoin> calculateNormalizeRange(List<String> bitcoinNames, LocalDate from, LocalDate to) {
     return bitcoinNames.stream()
-        .map(bitcoinName -> fetchBitCoins(bitcoinName, from, to))
+        .map(bitcoinName -> fetchBitCoinsPeriod(bitcoinName, from, to))
         .map(this::calculateBitCoinsResults)
         .map(BitcoinService::calculateNormalization)
         .sorted((a, b) -> b.getRange().compareTo(a.getRange()))
@@ -121,7 +110,7 @@ public class BitcoinService {
 
   public NormalizeBitcoin fetchHighestNormalizedCrypto(LocalDate date) {
     return Stream.of("BTC", "DOGE", "ETH", "LTC", "XRP")
-        .map(bitcoinName -> fetchBitCoins(bitcoinName, date.atStartOfDay().toLocalDate(), date.plusDays(1).atStartOfDay().toLocalDate()))
+        .map(bitcoinName -> fetchBitCoinsPeriod(bitcoinName, date.atStartOfDay().toLocalDate(), date.plusDays(1).atStartOfDay().toLocalDate()))
         .map(this::calculateBitCoinsResults)
         .map(BitcoinService::calculateNormalization)
         .sorted((a, b) -> b.getRange().compareTo(a.getRange()))

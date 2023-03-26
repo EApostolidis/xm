@@ -20,13 +20,13 @@ class BitcoinServiceTest {
 
   @Test
   void fetchBitCoins() {
-    List<Bitcoin> result = bitcoinService.fetchBitCoins("ETH", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
+    List<Bitcoin> result = bitcoinService.fetchBitCoinsPeriod("ETH", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
     Assertions.assertNotNull(result);
   }
 
   @Test
   void calculateBitCoinsResults() {
-    List<Bitcoin> bitcoins = bitcoinService.fetchBitCoins("DOGE", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
+    List<Bitcoin> bitcoins = bitcoinService.fetchBitCoinsPeriod("DOGE", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
     BitcoinMonthResults result = bitcoinService.calculateBitCoinsResults(bitcoins);
     Assertions.assertNotNull(result);
   }
