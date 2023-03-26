@@ -17,19 +17,6 @@ class RecommendationServiceTest {
   @Autowired
   RecommendationService recommendationService;
 
-//  @Test
-//  void fetchBitCoins() {
-//    List<Bitcoin> result = recomendationService.fetchBitCoinsPeriod("ETH", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
-//    Assertions.assertNotNull(result);
-//  }
-//
-//  @Test
-//  void calculateBitCoinsResults() {
-//    List<Bitcoin> bitcoins = recomendationService.fetchBitCoinsPeriod("DOGE", LocalDate.of(2000, 01, 01), LocalDate.of(2030, 01, 01));
-//    BitcoinResults result = recomendationService.calculateBitCoinsResults(bitcoins);
-//    Assertions.assertNotNull(result);
-//  }
-
   @Test
   void calculateNormalizeRange() {
     List<NormalizeRange> result = recommendationService.calculateNormalizeRange(LocalDate.of(2000, 01, 01),
