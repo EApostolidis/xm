@@ -43,6 +43,11 @@ class BitcoinServiceTest {
   void calculateBitCoinsResultsSpecificDate() {
     BitcoinMonthResults result = bitcoinService.calculateBitCoinsResultsSpecificDate(LocalDate.of(2022, 01, 01), "BTC");
     Assertions.assertNotNull(result);
+  }
 
+  @Test
+  void fetchHighestNormalizedCrypto() {
+    NormalizeBitcoin result = bitcoinService.fetchHighestNormalizedCrypto(LocalDate.of(2022, 01, 03));
+    Assertions.assertNotNull(result);
   }
 }
