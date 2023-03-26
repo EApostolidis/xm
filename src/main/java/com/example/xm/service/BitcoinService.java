@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
@@ -67,7 +68,6 @@ public class BitcoinService {
         Bitcoin current = bitcoinMappingIterator.next();
         if (current.getTimestamp().after(fromTimestamp) && current.getTimestamp().before(toTimestamp)) {
           bitcoins.add(current);
-          System.out.println(current);
         }
       }
       return bitcoins;
@@ -117,6 +117,16 @@ public class BitcoinService {
         .map(BitcoinService::calculateNormalization)
         .sorted((a, b) -> b.getRange().compareTo(a.getRange()))
         .collect(Collectors.toList());
+  }
+
+  public NormalizeBitcoin fetchHighestNormalizedCrypto(LocalDate date) {
+    return Stream.of("BTC", "DOGE", "ETH", "LTC", "XRP")
+        .map(bitcoinName -> fetchBitCoins(bitcoinName, date.atStartOfDay().toLocalDate(), date.plusDays(1).atStartOfDay().toLocalDate()))
+        .map(this::calculateBitCoinsResults)
+        .map(BitcoinService::calculateNormalization)
+        .sorted((a, b) -> b.getRange().compareTo(a.getRange()))
+        .collect(Collectors.toList()).get(0);
+
   }
 
   private static NormalizeBitcoin calculateNormalization(BitcoinMonthResults bitcoinMonthResults) {
