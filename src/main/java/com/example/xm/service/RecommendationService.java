@@ -50,7 +50,9 @@ public class RecommendationService {
    * Calculates the oldest/newest/min/max values for a requested crypto
    */
   public CryptoResults fetchCryptoResults(String cryptoName) {
-    return calculateCryptoResults(fetchCryptos(cryptoName));
+    return calculateCryptosResults().stream()
+        .filter(result -> result.getMin().getSymbol().equals(cryptoName))
+        .findFirst().orElseThrow(() -> new RuntimeException("There is no data for this crypto: " + cryptoName));
   }
 
   /**
@@ -76,6 +78,16 @@ public class RecommendationService {
             .sorted((a, b) -> b.getRange().compareTo(a.getRange()))
             .collect(Collectors.toList())).map(bitcoins -> bitcoins.get(0))
         .orElseThrow(() -> new RuntimeException("No crypto found for that day"));
+  }
+
+  /**
+   * Calculates the results for all the supported results
+   */
+  private List<CryptoResults> calculateCryptosResults() {
+    return configProperties.getCryptoNames().stream()
+        .map(this::fetchCryptos)
+        .map(this::calculateCryptoResults)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -144,8 +156,7 @@ public class RecommendationService {
   }
 
   /**
-   * Fetches the cryptos for a specific crypto name using {@link CsvMapper} and {@link CsvSchema}
-   * to transform data from csv files to {@link Crypto}
+   * Fetches the cryptos for a specific crypto name using {@link CsvMapper} and {@link CsvSchema} to transform data from csv files to {@link Crypto}
    */
   private List<Crypto> fetchCryptos(String cryptoName) {
     checkIfCryptoExists(cryptoName);
