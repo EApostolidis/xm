@@ -38,14 +38,11 @@ class RecommendationServiceTest {
   @Test
   void calculateBitCoinsResultsSpecificDate() {
     CryptoResults result = recommendationService.fetchCryptoResults("BTC");
-    Assertions.assertEquals(BigDecimal.valueOf(47722.66), result.getMax().getPrice());
-    Assertions.assertEquals(Timestamp.valueOf("2022-01-02 02:00:00.0"), result.getMax().getTimestamp());
-    Assertions.assertEquals(BigDecimal.valueOf(46813.21), result.getOldest().getPrice());
-    Assertions.assertEquals(Timestamp.valueOf("2022-01-01 06:00:00.0"), result.getOldest().getTimestamp());
-    Assertions.assertEquals(BigDecimal.valueOf(38415.79), result.getNewest().getPrice());
-    Assertions.assertEquals(Timestamp.valueOf("2022-01-31 22:00:00.0"), result.getNewest().getTimestamp());
-    Assertions.assertEquals(BigDecimal.valueOf(33276.59), result.getMin().getPrice());
-    Assertions.assertEquals(Timestamp.valueOf("2022-01-24 13:00:00.0"), result.getMin().getTimestamp());
+    Assertions.assertEquals(BigDecimal.valueOf(47722.66), result.getMaxPrice());
+    Assertions.assertEquals(BigDecimal.valueOf(33276.59), result.getMinPrice());
+    Assertions.assertEquals(Timestamp.valueOf("2022-01-01 06:00:00.0"), result.getOldest());
+    Assertions.assertEquals(Timestamp.valueOf("2022-01-31 22:00:00.0"), result.getNewest());
+    Assertions.assertEquals("BTC", result.getSymbol());
   }
 
   @Test

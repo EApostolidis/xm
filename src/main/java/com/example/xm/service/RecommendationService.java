@@ -51,7 +51,7 @@ public class RecommendationService {
    */
   public CryptoResults fetchCryptoResults(String cryptoName) {
     return calculateCryptosResults().stream()
-        .filter(result -> result.getMin().getSymbol().equals(cryptoName))
+        .filter(result -> result.getSymbol().equals(cryptoName))
         .findFirst().orElseThrow(() -> new RuntimeException("There is no data for this crypto: " + cryptoName));
   }
 
@@ -100,21 +100,22 @@ public class RecommendationService {
     Timestamp newest = NEWEST;
     CryptoResults result = new CryptoResults();
     for (Crypto crypto : cryptos) {
+      result.setSymbol(crypto.getSymbol());
       if (crypto.getPrice().compareTo(max) >= 0) {
         max = crypto.getPrice();
-        result.setMax(crypto);
+        result.setMaxPrice(crypto.getPrice());
       }
       if (crypto.getPrice().compareTo(min) <= 0) {
         min = crypto.getPrice();
-        result.setMin(crypto);
+        result.setMinPrice(crypto.getPrice());
       }
       if (crypto.getTimestamp().before(oldest)) {
         oldest = crypto.getTimestamp();
-        result.setOldest(crypto);
+        result.setOldest(crypto.getTimestamp());
       }
       if (crypto.getTimestamp().after(newest)) {
         newest = crypto.getTimestamp();
-        result.setNewest(crypto);
+        result.setNewest(crypto.getTimestamp());
       }
     }
     return result;
@@ -179,9 +180,9 @@ public class RecommendationService {
    */
   private static NormalizeRange calculateNormalizationRange(CryptoResults cryptoResults) {
     NormalizeRange normalizeRange = new NormalizeRange();
-    normalizeRange.setSymbol(cryptoResults.getMin().getSymbol());
-    normalizeRange.setRange((cryptoResults.getMax().getPrice().subtract(cryptoResults.getMin().getPrice()))
-        .divide(cryptoResults.getMin().getPrice(), 2, RoundingMode.HALF_UP));
+    normalizeRange.setSymbol(cryptoResults.getSymbol());
+    normalizeRange.setRange((cryptoResults.getMaxPrice().subtract(cryptoResults.getMinPrice()))
+        .divide(cryptoResults.getMinPrice(), 2, RoundingMode.HALF_UP));
     return normalizeRange;
   }
 
