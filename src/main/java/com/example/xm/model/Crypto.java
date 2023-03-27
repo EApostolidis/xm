@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Bitcoin {
+public class Crypto {
 
   private Timestamp timestamp;
   private String symbol;

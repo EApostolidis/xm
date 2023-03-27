@@ -8,10 +8,16 @@ import org.springframework.context.annotation.Configuration;
 
 import lombok.Data;
 
+/**
+ * Application configurations
+ */
 @Configuration
 @ConfigurationProperties(prefix = "xm")
 @Data
 public class ConfigProperties {
 
-  public List<String> bitcoinNames = new ArrayList<>();
+  /**
+   * Supported cryptos
+   */
+  public List<String> cryptoNames = new ArrayList<>();
 }

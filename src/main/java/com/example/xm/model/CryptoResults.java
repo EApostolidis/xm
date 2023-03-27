@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BitcoinResults {
+public class CryptoResults {
 
-  private Bitcoin oldest;
-  private Bitcoin newest;
-  private Bitcoin min;
-  private Bitcoin max;
+  private Crypto oldest;
+  private Crypto newest;
+  private Crypto min;
+  private Crypto max;
 
 }

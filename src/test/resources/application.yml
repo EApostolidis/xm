@@ -1,6 +1,5 @@
 xm:
-  name: "AAAA"
-  bitcoinNames:
+  cryptoNames:
     - BTC
     - DOGE
     - ETH
