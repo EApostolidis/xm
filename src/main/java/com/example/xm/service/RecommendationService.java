@@ -58,13 +58,12 @@ public class RecommendationService {
 
   public NormalizeRange fetchHighestNormalizedRange(LocalDate date) {
     return Optional.of(configProperties.getBitcoinNames().stream()
-            .map(bitcoinName -> fetchBitCoinsPeriod(bitcoinName, date, date))
+            .map(bitcoinName -> fetchBitCoinsDate(bitcoinName, date))
             .map(this::calculateBitCoinsResults)
             .map(RecommendationService::calculateNormalizationRange)
             .sorted((a, b) -> b.getRange().compareTo(a.getRange()))
             .collect(Collectors.toList())).map(bitcoins -> bitcoins.get(0))
         .orElseThrow(() -> new RuntimeException("No bitcoins found for that day"));
-
   }
 
   private BitcoinResults calculateBitCoinsResults(List<Bitcoin> bitcoins) {
@@ -94,16 +93,31 @@ public class RecommendationService {
     return result;
   }
 
+  private List<Bitcoin> fetchBitCoinsDate(String bitcoinName, LocalDate date) {
+    Timestamp fromTimestamp = Timestamp.valueOf(date.atStartOfDay());
+    Timestamp toTimestamp = Timestamp.valueOf(date.atTime(LocalTime.MAX));
+    List<Bitcoin> bitcoinsPeriod = filterBitcoinsPeriod(bitcoinName, fromTimestamp, toTimestamp);
+    if (bitcoinsPeriod.isEmpty()) {
+      throw new RuntimeException("There are no bitcoins data for: " + date);
+    }
+    return bitcoinsPeriod;
+  }
+
   private List<Bitcoin> fetchBitCoinsPeriod(String bitcoinName, LocalDate from, LocalDate to) {
     Timestamp fromTimestamp = Timestamp.valueOf(from.atStartOfDay());
     Timestamp toTimestamp = Timestamp.valueOf(to.atTime(LocalTime.MAX));
-    List<Bitcoin> bitcoinsPeriod = fetchBitCoins(bitcoinName).stream()
-        .filter(bitcoin -> bitcoin.getTimestamp().after(fromTimestamp) && bitcoin.getTimestamp().before(toTimestamp))
-        .collect(Collectors.toList());
+    List<Bitcoin> bitcoinsPeriod = filterBitcoinsPeriod(bitcoinName, fromTimestamp, toTimestamp);
     if (bitcoinsPeriod.isEmpty()) {
       throw new RuntimeException("There are no bitcoins data between " + fromTimestamp + " and " + toTimestamp);
     }
     return bitcoinsPeriod;
+  }
+
+
+  private List<Bitcoin> filterBitcoinsPeriod(String bitcoinName, Timestamp fromTimestamp, Timestamp toTimestamp) {
+    return fetchBitCoins(bitcoinName).stream()
+        .filter(bitcoin -> bitcoin.getTimestamp().after(fromTimestamp) && bitcoin.getTimestamp().before(toTimestamp))
+        .collect(Collectors.toList());
   }
 
   private List<Bitcoin> fetchBitCoins(String bitcoinName) {

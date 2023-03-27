@@ -64,6 +64,6 @@ class RecommendationServiceTest {
   @Test
   void fetchHighestNormalizedCrypto_fail() {
     Throwable exception = assertThrows(RuntimeException.class, () -> recommendationService.fetchHighestNormalizedRange(LocalDate.of(2021, 01, 03)));
-    Assertions.assertEquals("There are no bitcoins data between 2021-01-03 00:00:00.0 and 2021-01-03 23:59:59.999999999", exception.getMessage());
+    Assertions.assertEquals("There are no bitcoins data for: 2021-01-03", exception.getMessage());
   }
 }
