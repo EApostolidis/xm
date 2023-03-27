@@ -50,7 +50,7 @@ public class RecommendationService {
    * Calculates the oldest/newest/min/max values for a requested crypto
    */
   public CryptoResults fetchCryptoResults(String cryptoName) {
-    return calculateCryptosResults().stream()
+    return calculateCryptosResults(configProperties.getCryptoNames()).stream()
         .filter(result -> result.getSymbol().equals(cryptoName))
         .findFirst().orElseThrow(() -> new RuntimeException("There is no data for this crypto: " + cryptoName));
   }
@@ -83,8 +83,8 @@ public class RecommendationService {
   /**
    * Calculates the results for all the supported results
    */
-  private List<CryptoResults> calculateCryptosResults() {
-    return configProperties.getCryptoNames().stream()
+  private List<CryptoResults> calculateCryptosResults(List<String> cryptoNames) {
+    return cryptoNames.stream()
         .map(this::fetchCryptos)
         .map(this::calculateCryptoResults)
         .collect(Collectors.toList());
