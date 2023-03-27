@@ -60,9 +60,9 @@ public class RecommendationService {
    */
   public List<NormalizeRange> calculateNormalizeRange(LocalDate from, LocalDate to) {
     return configProperties.getCryptoNames().stream()
-        .map(bitcoinName -> fetchCryptosPeriod(bitcoinName, from, to))
+        .map(bitcoinName -> fetchCryptosPerPeriod(bitcoinName, from, to))
         .map(this::calculateCryptoResults)
-        .map(RecommendationService::calculateNormalizationRange)
+        .map(this::calculateNormalizationRange)
         .sorted((a, b) -> b.getRange().compareTo(a.getRange()))
         .collect(Collectors.toList());
   }
@@ -72,9 +72,9 @@ public class RecommendationService {
    */
   public NormalizeRange fetchHighestNormalizedRange(LocalDate date) {
     return Optional.of(configProperties.getCryptoNames().stream()
-            .map(cryptoName -> fetchCryptosDate(cryptoName, date))
+            .map(cryptoName -> fetchCryptosPerDate(cryptoName, date))
             .map(this::calculateCryptoResults)
-            .map(RecommendationService::calculateNormalizationRange)
+            .map(this::calculateNormalizationRange)
             .sorted((a, b) -> b.getRange().compareTo(a.getRange()))
             .collect(Collectors.toList())).map(bitcoins -> bitcoins.get(0))
         .orElseThrow(() -> new RuntimeException("No crypto found for that day"));
@@ -124,7 +124,7 @@ public class RecommendationService {
   /**
    * Retrieves the cryptos for a specific date and specific crypto
    */
-  private List<Crypto> fetchCryptosDate(String bitcoinName, LocalDate date) {
+  private List<Crypto> fetchCryptosPerDate(String bitcoinName, LocalDate date) {
     Timestamp fromTimestamp = Timestamp.valueOf(date.atStartOfDay());
     Timestamp toTimestamp = Timestamp.valueOf(date.atTime(LocalTime.MAX));
     List<Crypto> cryptosPeriod = filterCryptosPeriod(bitcoinName, fromTimestamp, toTimestamp);
@@ -137,7 +137,7 @@ public class RecommendationService {
   /**
    * Retrieves the cryptos for a range of time and specific crypto
    */
-  private List<Crypto> fetchCryptosPeriod(String bitcoinName, LocalDate from, LocalDate to) {
+  private List<Crypto> fetchCryptosPerPeriod(String bitcoinName, LocalDate from, LocalDate to) {
     Timestamp fromTimestamp = Timestamp.valueOf(from.atStartOfDay());
     Timestamp toTimestamp = Timestamp.valueOf(to.atTime(LocalTime.MAX));
     List<Crypto> cryptosPeriod = filterCryptosPeriod(bitcoinName, fromTimestamp, toTimestamp);
@@ -178,7 +178,7 @@ public class RecommendationService {
   /**
    * Calculates the normal range a crypto.
    */
-  private static NormalizeRange calculateNormalizationRange(CryptoResults cryptoResults) {
+  private NormalizeRange calculateNormalizationRange(CryptoResults cryptoResults) {
     NormalizeRange normalizeRange = new NormalizeRange();
     normalizeRange.setSymbol(cryptoResults.getSymbol());
     normalizeRange.setRange((cryptoResults.getMaxPrice().subtract(cryptoResults.getMinPrice()))
