@@ -13,5 +13,5 @@ import lombok.Data;
 @Data
 public class ConfigProperties {
 
-  public List<String> bitcoinNames = new ArrayList<>();
+  public List<String> cryptoNames = new ArrayList<>();
 }

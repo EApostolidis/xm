@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.xm.model.BitcoinResults;
+import com.example.xm.model.CryptoResults;
 import com.example.xm.model.NormalizeRange;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,12 +32,12 @@ class RecommendationServiceTest {
   void calculateNormalizeRange_fail() {
     Throwable exception = assertThrows(RuntimeException.class, () -> recommendationService.calculateNormalizeRange(LocalDate.of(2000, 01, 01),
         LocalDate.of(2000, 01, 01)));
-    Assertions.assertEquals("There are no bitcoins data between 2000-01-01 00:00:00.0 and 2000-01-01 23:59:59.999999999", exception.getMessage());
+    Assertions.assertEquals("There are no cryptos data between 2000-01-01 00:00:00.0 and 2000-01-01 23:59:59.999999999", exception.getMessage());
   }
 
   @Test
   void calculateBitCoinsResultsSpecificDate() {
-    BitcoinResults result = recommendationService.fetchBitcoinResults("BTC");
+    CryptoResults result = recommendationService.fetchCryptoResults("BTC");
     Assertions.assertEquals(BigDecimal.valueOf(47722.66), result.getMax().getPrice());
     Assertions.assertEquals(Timestamp.valueOf("2022-01-02 02:00:00.0"), result.getMax().getTimestamp());
     Assertions.assertEquals(BigDecimal.valueOf(46813.21), result.getOldest().getPrice());
@@ -50,8 +50,8 @@ class RecommendationServiceTest {
 
   @Test
   void calculateBitCoinsResultsSpecificDate_fail() {
-    Throwable exception = assertThrows(RuntimeException.class, () -> recommendationService.fetchBitcoinResults("AAA"));
-    Assertions.assertEquals("There is no data for this bitcoin: AAA", exception.getMessage());
+    Throwable exception = assertThrows(RuntimeException.class, () -> recommendationService.fetchCryptoResults("AAA"));
+    Assertions.assertEquals("There is no data for this crypto: AAA", exception.getMessage());
   }
 
   @Test
@@ -64,6 +64,6 @@ class RecommendationServiceTest {
   @Test
   void fetchHighestNormalizedCrypto_fail() {
     Throwable exception = assertThrows(RuntimeException.class, () -> recommendationService.fetchHighestNormalizedRange(LocalDate.of(2021, 01, 03)));
-    Assertions.assertEquals("There are no bitcoins data for: 2021-01-03", exception.getMessage());
+    Assertions.assertEquals("There are no cryptos data for: 2021-01-03", exception.getMessage());
   }
 }
